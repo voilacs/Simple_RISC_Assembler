@@ -31,5 +31,38 @@ def opcode_return(cmd,move_type="null"):
             return opcode[2][1]
     else:
         return opcode[a]
+    
+def typeOfInstruction(ins, isRegister= -1):
+    '''
+    Returns a string from {'a', 'b', 'c', 'd', 'e', 'f'} depending on the type of the instruction passed as a parameter\n
+    If the instruction is not part of the ISA, the function returns -1
+    ins: The syntactical instruction. For example, mul for multiply instruction
+    In case of MOV instruction, isRegister= 0 for immediate and isRegister= 1 for register\n
+    Do not pass the second argument for other commands.
+    '''
+    if(isRegister==0):
+        return 'b'
+    elif (isRegister==1):
+        return 'c'
+    l1=["add", "sub", "mul", "xor", "or", "and"]
+    l2=["mov", "rs", "ls"]
+    l3=["mov", "div", "not", "cmp"]
+    l4=["ld", "st"]
+    l5=["jmp", "jlt", "jgt", "je"]
+    l6=["hlt"]
+    if ins in l1:
+      return 'a'
+    elif ins in l2:
+      return 'b'
+    elif ins in l3:
+      return 'c'
+    elif ins in l4:
+      return 'd'
+    elif ins in l5:
+      return 'e'
+    elif ins in l6:
+      return 'f'
+    else:
+      return -1;
        
         
