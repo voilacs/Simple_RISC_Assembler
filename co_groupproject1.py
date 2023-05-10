@@ -21,5 +21,16 @@ def reg_address(register):
     return -1
 x=reg_address('R5')
 print(x)
-
+def opcode_return(cmd,move_type="null"):
+    #imm for immediate and reg for register
+    instructions=["add","sub","mov","ld","st","mul","div","rs","ls","xor","or","and","not","cmp","jmp","jlt","jgt","je","hlt"]
+    opcode=["00000","00001",["00010","00011"],"00100","00101","00110","00111","01000","01001","01010","01011","01100","01101","01110","11100","11101","11111","11010"]
+    a=instructions.index(cmd)
+    if(a==2):
+        if(move_type=="imm"):
+            return opcode[2][0]
+        else:
+            return opcode[2][1]
+    else:
+        return opcode[a]
        
