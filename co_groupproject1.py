@@ -19,8 +19,6 @@ def reg_address(register):
         if(register==registers[i]):
             return values[i]
     return -1
-x=reg_address('R5')
-print(x)
 def opcode_return(cmd,move_type="null"):
     #imm for immediate and reg for register
     instructions=["add","sub","mov","ld","st","mul","div","rs","ls","xor","or","and","not","cmp","jmp","jlt","jgt","je","hlt"]
@@ -34,3 +32,4 @@ def opcode_return(cmd,move_type="null"):
     else:
         return opcode[a]
        
+        
