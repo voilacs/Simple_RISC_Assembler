@@ -33,7 +33,7 @@ def opcode_return(cmd,move_type="null"):
     else:
         return opcode[a]
     
-def typeOfInstruction(ins, isRegister= -1):
+def InstructionType(ins, isRegister= -1):
     if(isRegister==0):
         return 'b'
     elif (isRegister==1):
