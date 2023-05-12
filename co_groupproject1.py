@@ -1,3 +1,4 @@
+import sys
 def binaryconverter(number):
     l=[]
     while number!=0:
@@ -64,5 +65,22 @@ def typeOfInstruction(ins, isRegister= -1):
       return 'f'
     else:
       return -1;
-       
-        
+Asscode=[]
+tmp_vars=[]
+errors=[]
+vars=dict()
+for i in sys.stdin:
+    Asscode.append(i)
+tmp=len(Asscode)
+asscode=[i for i in Asscode if (i)] #removing blank lines
+for i in range(len(Asscode)):
+    j=Asscode[i].split()
+    if(j[0]=="var" and len(j)==2 and j[1] not in tmp_vars):
+        tmp_vars.append(j[1])
+    elif(j[0]=="var" and len(j)==2 and j[1] in tmp_vars):
+        errors.append(f'Error in line {i+1} : Multiple usage of same variable')
+    elif(j[0]=="var" and len(j)!=2):
+        errors.append(f'Error in line {i+1} : Invalid declaration of variable')
+for i in tmp_vars:
+    vars[i]=binaryconverter(tmp)
+    tmp+=1
