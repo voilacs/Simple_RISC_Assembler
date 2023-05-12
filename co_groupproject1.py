@@ -92,7 +92,16 @@ for i in range(1,len(tmp_labels+1)):
     labels[tmp_labels[i-1]]=binaryconverter(i)
 for i in range(len(Asscode)):
     j=Asscode[i].split()
-                   
+    
+halt=0
+if(InstructionType(j[0])=='f'):
+    if(len(j)!=1):
+        errors.append(f'Error in line {i+1} : Syntax Error')
+    else:
+        binary.append(opcode_return(j[0])+'0'*11)
+        halt=1
+if(halt==0):
+    binary.append(f'Error in line {i+1} : Halt instruction missing')                   
                    
                    
                    
