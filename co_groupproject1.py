@@ -64,7 +64,7 @@ errors=[]
 vars=dict()
 labels=dict()
 tmp_labels=[]
-
+binary=[]
 for i in sys.stdin:
     Asscode.append(i)
 tmp=len(Asscode)
