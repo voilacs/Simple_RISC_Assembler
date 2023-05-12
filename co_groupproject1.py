@@ -90,3 +90,16 @@ for i in range(len(Asscode)):
         errors.append(f'Error in line {i+1} : invalid declaration of label')
 for i in range(1,len(tmp_labels+1)):
     labels[tmp_labels[i-1]]=binaryconverter(i)
+for i in range(len(Asscode)):
+    j=Asscode[i].split()
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
