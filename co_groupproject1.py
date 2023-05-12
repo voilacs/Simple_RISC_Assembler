@@ -62,6 +62,9 @@ Asscode=[]
 tmp_vars=[]
 errors=[]
 vars=dict()
+labels=dict()
+tmp_labels=[]
+
 for i in sys.stdin:
     Asscode.append(i)
 tmp=len(Asscode)
@@ -77,3 +80,13 @@ for i in range(len(Asscode)):
 for i in tmp_vars:
     vars[i]=binaryconverter(tmp)
     tmp+=1
+for i in range(len(Asscode)):
+    j=Asscode[i].split()
+    if j[0][-1]==':' and j[0][0:len(j[0])-1] not in tmp_labels:
+        tmp_labels.append(j[0][0:len(j[0])-1])
+    elif j[0][-1]==':' and j[0][0:len(j[0])-1] in tmp_labels:
+        errors.append(f'Error in line {i+1} : Multiple usage of same labels')
+    elif ":" in j:
+        errors.append(f'Error in line {i+1} : invalid declaration of label')
+for i in range(1,len(tmp_labels+1)):
+    labels[tmp_labels[i-1]]=binaryconverter(i)
