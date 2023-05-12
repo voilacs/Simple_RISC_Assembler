@@ -6,7 +6,7 @@ def binaryconverter(number):
         l.append(rem)
         number=number//2
     l.reverse()        
-    while len(l) < 8:
+    while len(l) < 7:
         l.insert(0,'0')
     binary_string = ''.join(l)
     return binary_string
