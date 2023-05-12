@@ -97,6 +97,7 @@ halt=0
 if(InstructionType(j[0])=='f'):
     if(len(j)!=1):
         errors.append(f'Error in line {i+1} : Syntax Error')
+        halt=1
     else:
         binary.append(opcode_return(j[0])+'0'*11)
         halt=1
