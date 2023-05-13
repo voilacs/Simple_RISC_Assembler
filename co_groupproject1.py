@@ -92,57 +92,79 @@ for i in range(1,len(tmp_labels+1)):
     labels[tmp_labels[i-1]]=binaryconverter(i)
 for i in range(len(Asscode)):
     j=Asscode[i].split()
- 
-if (InstructionType(j[0]) == 'a' && len[j]!=4):
-  errors.append(f'Error in line {i+1}: Syntax error')
-elif (InstructionType(j[0]) == 'a' and len(j) == 4):
-        if (reg_address(j[1]) == -1 or reg_address(j[2]) == -1 or reg_address(j[3]) == -1):
-          errors.append(f'Error in line {i+1}: Register not valid')
-        elif (reg_address(j[1]) == "111" or reg_address(j[2]) == "111" or reg_address(j[3]) == "111"):
-          errors.append(f'Error in line {i+1}: Invalid flag')
-        else:
-          binary.append(opcode_return(j[0]) + "00" + reg_address(j[1]) + reg_address(j[2]) + reg_address(j[3]))
-        
-if (InstructionType(j[0]) == 'b' && len(j)!=3):
-  errors.append(f'Error in line {i+1}: Invalid syntax')
-elif (InstructionType(j[0]) == 'b' and len(j) == 3):
-  if(registerAddress(j[1])==-1):
-    errors.append(f'Error in line {i+1}: Register not valid')
-    continue
-  if (j[2][0] != "$"):
-    errors.append(f'Error in line {i+1}:Syntax Invalid')
-    continue
-  if(int(j[2][1::]) not in range(0,256)):
-    errors.append(f'Error in line {i+1}: Immediate value wrong')
-    continue
-  if(registerAddress(j[1]) == "111"):
-    errors.append(f'Error in line {i+1}: Flag invalid')
-    continue
-  abc=binary8bit(int(j[2][1::]))
-  binary.append(opcode_return(j[0]) + registerAddress(j[1]) + abc)
-    
-  if(InstructionType(j[0])=='e'):
-    if(len(j)!=2):
+    if (j[0] == "mov" and len(j) == 3):
+        if (reg_address(j[2]) != -1):
+            if (reg_address(j[1])==-1):
+                errors.append(f'Error in line {i+1} : Typo in register name')
+            elif(reg_address(j[1]) == "111"):
+                errors.append(f'Error in line {i+1} : Illegal use of FLAGS register')
+            elif(reg_address(j[1]) != -1 and reg_address(j[2]) != -1):
+                binary.append(opcode_return(j[0], "reg") + "00000" + reg_address(currentLine[1]) + reg_address(j[2]))
+            continue
+    elif (j[2][1:len(j[2])].isdecimal()):
+        a=int(j[2][1:len(j[2])])
+        if (reg_address(j[1]) == -1):
+            errors.append(f'Error in line {i+1} : Typo in register name')
+        elif(reg_address(j[1]) == "111"):
+            errors.append(f'Error in line {i+1} : Illegal use of FLAGS register')
+        elif (a < 0 or a > 127):
+            errors.append(f'Error in line {i+1} : Immediate value out of range')
+        elif(reg_address(j[2]) != -1 and a>=0 and a<=127):
+            binary.append(opcode_return(j[0],"imm") + reg_address(currentLine[1]) + binaryconverter(a))
+        continue
+    elif (j[0] == "mov" and len(j)!=3):
         errors.append(f'Error in line {i+1} : Syntax Error')
-    else:
-        if(j[0] not in labels.keys()):
-            errors.append(f'Error in line {i+1} : Use of undefined labels')
-        else:
-            if(j[0] in vars.keys()):
-                errors.append(f'Error in line {i+1} : Misuse of variable as label')
+            continue
+    if (InstructionType(j[0]) == 'a' && len[j]!=4):
+      errors.append(f'Error in line {i+1}: Syntax error')
+    elif (InstructionType(j[0]) == 'a' and len(j) == 4):
+            if (reg_address(j[1]) == -1 or reg_address(j[2]) == -1 or reg_address(j[3]) == -1):
+              errors.append(f'Error in line {i+1}: Register not valid')
+            elif (reg_address(j[1]) == "111" or reg_address(j[2]) == "111" or reg_address(j[3]) == "111"):
+              errors.append(f'Error in line {i+1}: Invalid flag')
             else:
-                binary.append(opcode_return(j[0])+'0'*4+labels[j[0]])  
-      
-  halt=0
-    if(InstructionType(j[0])=='f'):
-        if(len(j)!=1):
+              binary.append(opcode_return(j[0]) + "00" + reg_address(j[1]) + reg_address(j[2]) + reg_address(j[3]))
+
+    if (InstructionType(j[0]) == 'b' && len(j)!=3):
+      errors.append(f'Error in line {i+1}: Invalid syntax')
+    elif (InstructionType(j[0]) == 'b' and len(j) == 3):
+      if(registerAddress(j[1])==-1):
+        errors.append(f'Error in line {i+1}: Register not valid')
+        continue
+      if (j[2][0] != "$"):
+        errors.append(f'Error in line {i+1}:Syntax Invalid')
+        continue
+      if(int(j[2][1::]) not in range(0,256)):
+        errors.append(f'Error in line {i+1}: Immediate value wrong')
+        continue
+      if(registerAddress(j[1]) == "111"):
+        errors.append(f'Error in line {i+1}: Flag invalid')
+        continue
+      abc=binary8bit(int(j[2][1::]))
+      binary.append(opcode_return(j[0]) + registerAddress(j[1]) + abc)
+
+      if(InstructionType(j[0])=='e'):
+        if(len(j)!=2):
             errors.append(f'Error in line {i+1} : Syntax Error')
-            halt=1
         else:
-            binary.append(opcode_return(j[0])+'0'*11)
-            halt=1
-        if(halt==0):
-            errors.append(f'Error in line {i+1} : Halt instruction missing')     
+            if(j[0] not in labels.keys()):
+                errors.append(f'Error in line {i+1} : Use of undefined labels')
+            else:
+                if(j[0] in vars.keys()):
+                    errors.append(f'Error in line {i+1} : Misuse of variable as label')
+                else:
+                    binary.append(opcode_return(j[0])+'0'*4+labels[j[0]])  
+
+      halt=0
+        if(InstructionType(j[0])=='f'):
+            if(len(j)!=1):
+                errors.append(f'Error in line {i+1} : Syntax Error')
+                halt=1
+            else:
+                binary.append(opcode_return(j[0])+'0'*11)
+                halt=1
+            if(halt==0):
+                errors.append(f'Error in line {i+1} : Halt instruction missing')     
   
     
   
