@@ -121,16 +121,29 @@ elif (InstructionType(j[0]) == 'b' and len(j) == 3):
   abc=binary8bit(int(j[2][1::]))
   binary.append(opcode_return(j[0]) + registerAddress(j[1]) + abc)
     
-halt=0
-if(InstructionType(j[0])=='f'):
-    if(len(j)!=1):
+  if(InstructionType(j[0])=='e'):
+    if(len(j)!=2):
         errors.append(f'Error in line {i+1} : Syntax Error')
-        halt=1
     else:
-        binary.append(opcode_return(j[0])+'0'*11)
-        halt=1
-if(halt==0):
-    errors.append(f'Error in line {i+1} : Halt instruction missing')     
+        if(j[0] not in labels.keys()):
+            errors.append(f'Error in line {i+1} : Use of undefined labels')
+        else:
+            if(j[0] in vars.keys()):
+                errors.append(f'Error in line {i+1} : Misuse of variable as label')
+            else:
+                binary.append(opcode_return(j[0])+'0'*4+labels[j[0]])  
+      
+  halt=0
+    if(InstructionType(j[0])=='f'):
+        if(len(j)!=1):
+            errors.append(f'Error in line {i+1} : Syntax Error')
+            halt=1
+        else:
+            binary.append(opcode_return(j[0])+'0'*11)
+            halt=1
+        if(halt==0):
+            errors.append(f'Error in line {i+1} : Halt instruction missing')     
+  
     
   
                    
