@@ -101,17 +101,17 @@ for i in range(len(Asscode)):
             elif(reg_address(j[1]) != -1 and reg_address(j[2]) != -1):
                 binary.append(opcode_return(j[0], "reg") + "00000" + reg_address(currentLine[1]) + reg_address(j[2]))
             continue
-    elif (j[2][1:len(j[2])].isdecimal()):
-        a=int(j[2][1:len(j[2])])
-        if (reg_address(j[1]) == -1):
-            errors.append(f'Error in line {i+1} : Typo in register name')
-        elif(reg_address(j[1]) == "111"):
-            errors.append(f'Error in line {i+1} : Illegal use of FLAGS register')
-        elif (a < 0 or a > 127):
-            errors.append(f'Error in line {i+1} : Immediate value out of range')
-        elif(reg_address(j[2]) != -1 and a>=0 and a<=127):
-            binary.append(opcode_return(j[0],"imm") + reg_address(currentLine[1]) + binaryconverter(a))
-        continue
+        elif (j[2][1:len(j[2])].isdecimal()):
+            a=int(j[2][1:len(j[2])])
+            if (reg_address(j[1]) == -1):
+                errors.append(f'Error in line {i+1} : Typo in register name')
+            elif(reg_address(j[1]) == "111"):
+                errors.append(f'Error in line {i+1} : Illegal use of FLAGS register')
+            elif (a < 0 or a > 127):
+                errors.append(f'Error in line {i+1} : Immediate value out of range')
+            elif(reg_address(j[2]) != -1 and a>=0 and a<=127):
+                binary.append(opcode_return(j[0],"imm") + reg_address(currentLine[1]) + binaryconverter(a))
+            continue
     elif (j[0] == "mov" and len(j)!=3):
         errors.append(f'Error in line {i+1} : Syntax Error')
             continue
@@ -155,16 +155,16 @@ for i in range(len(Asscode)):
                 else:
                     binary.append(opcode_return(j[0])+'0'*4+labels[j[0]])  
 
-      halt=0
-        if(InstructionType(j[0])=='f'):
-            if(len(j)!=1):
-                errors.append(f'Error in line {i+1} : Syntax Error')
-                halt=1
-            else:
-                binary.append(opcode_return(j[0])+'0'*11)
-                halt=1
-            if(halt==0):
-                errors.append(f'Error in line {i+1} : Halt instruction missing')     
+       halt=0
+       if(InstructionType(j[0])=='f'):
+                if(len(j)!=1):
+                    errors.append(f'Error in line {i+1} : Syntax Error')
+                    halt=1
+                else:
+                    binary.append(opcode_return(j[0])+'0'*11)
+                    halt=1
+                if(halt==0):
+                    errors.append(f'Error in line {i+1} : Halt instruction missing')    
   
     
   
