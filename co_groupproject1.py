@@ -92,7 +92,18 @@ for i in range(1,len(tmp_labels+1)):
     labels[tmp_labels[i-1]]=binaryconverter(i)
 for i in range(len(Asscode)):
     j=Asscode[i].split()
-    
+ 
+if (InstructionType(j[0]) == 'a' && len[j]!=4):
+  errors.append(f'Error in line {i+1}: Syntax error')
+
+elif (InstructionType(j[0]) == 'a' and len(j) == 4):
+        if (reg_address(j[1]) == -1 or reg_address(j[2]) == -1 or reg_address(j[3]) == -1):
+          errors.append(f'Error in line {i+1}: Register not valid')
+        elif (reg_address(j[1]) == "111" or reg_address(j[2]) == "111" or reg_address(j[3]) == "111"):
+          errors.append(f'Error in line {i+1}: Invalid flag')
+        else:
+          binary.append(opcode_return(j[0]) + "00" + reg_address(j[1]) + reg_address(j[2]) + reg_address(j[3]))
+        
 halt=0
 if(InstructionType(j[0])=='f'):
     if(len(j)!=1):
@@ -102,7 +113,9 @@ if(InstructionType(j[0])=='f'):
         binary.append(opcode_return(j[0])+'0'*11)
         halt=1
 if(halt==0):
-    binary.append(f'Error in line {i+1} : Halt instruction missing')                   
+    binary.append(f'Error in line {i+1} : Halt instruction missing')     
+    
+  
                    
                    
                    
