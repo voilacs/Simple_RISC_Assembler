@@ -118,8 +118,8 @@ elif (InstructionType(j[0]) == 'b' and len(j) == 3):
   if(registerAddress(j[1]) == "111"):
     errors.append(f'Error in line {i+1}: Flag invalid')
     continue
-  a=binary8bit(int(j[2][1::]))
-  binary.append(opcode_return(j[0]) + registerAddress(j[1]) + a)
+  abc=binary8bit(int(j[2][1::]))
+  binary.append(opcode_return(j[0]) + registerAddress(j[1]) + abc)
     
 halt=0
 if(InstructionType(j[0])=='f'):
