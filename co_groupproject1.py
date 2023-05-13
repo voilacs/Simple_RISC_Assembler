@@ -130,7 +130,7 @@ if(InstructionType(j[0])=='f'):
         binary.append(opcode_return(j[0])+'0'*11)
         halt=1
 if(halt==0):
-    binary.append(f'Error in line {i+1} : Halt instruction missing')     
+    errors.append(f'Error in line {i+1} : Halt instruction missing')     
     
   
                    
