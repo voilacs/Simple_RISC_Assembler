@@ -95,7 +95,6 @@ for i in range(len(Asscode)):
  
 if (InstructionType(j[0]) == 'a' && len[j]!=4):
   errors.append(f'Error in line {i+1}: Syntax error')
-
 elif (InstructionType(j[0]) == 'a' and len(j) == 4):
         if (reg_address(j[1]) == -1 or reg_address(j[2]) == -1 or reg_address(j[3]) == -1):
           errors.append(f'Error in line {i+1}: Register not valid')
@@ -104,6 +103,24 @@ elif (InstructionType(j[0]) == 'a' and len(j) == 4):
         else:
           binary.append(opcode_return(j[0]) + "00" + reg_address(j[1]) + reg_address(j[2]) + reg_address(j[3]))
         
+if (InstructionType(j[0]) == 'b' && len(j)!=3):
+  errors.append(f'Error in line {i+1}: Invalid syntax')
+elif (InstructionType(j[0]) == 'b' and len(j) == 3):
+  if(registerAddress(j[1])==-1):
+    errors.append(f'Error in line {i+1}: Register not valid')
+    continue
+  if (j[2][0] != "$"):
+    errors.append(f'Error in line {i+1}:Syntax Invalid')
+    continue
+  if(int(j[2][1::]) not in range(0,256)):
+    errors.append(f'Error in line {i+1}: Immediate value wrong')
+    continue
+  if(registerAddress(j[1]) == "111"):
+    errors.append(f'Error in line {i+1}: Flag invalid')
+    continue
+  a=binary8bit(int(j[2][1::]))
+  binary.append(opcode_return(j[0]) + registerAddress(j[1]) + a)
+    
 halt=0
 if(InstructionType(j[0])=='f'):
     if(len(j)!=1):
