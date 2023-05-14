@@ -10,6 +10,21 @@ def binaryconverter(number):
         l.insert(0,'0')
     binary_string = ''.join(l)
     return binary_string
+def float_bin(number, places = 3):
+    """ only give a float number between 0 and 15, change places to places =4 if you need more range!"""
+	whole, dec = str(number).split(".")
+	whole = int(whole)
+	dec = int (dec)
+	res = bin(whole).lstrip("0b") + "."
+	for x in range(places):
+		whole, dec = str((decimal(dec)) * 2).split(".")
+		dec = int(dec)
+		res += whole
+	return res
+def decimal(num):
+	while num > 1:
+		num /= 10
+	return num
 def reg_address(register):
     #Use A capital letter + a number to refer to a register into the function 
     registers=['R0', 'R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'FLAGS']
