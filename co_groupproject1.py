@@ -75,6 +75,8 @@ for i in range(len(Asscode)):
         errors.append(f'Error in line {i+1} : Multiple usage of same variable')
     elif(j[0]=="var" and len(j)!=2):
         errors.append(f'Error in line {i+1} : Invalid declaration of variable')
+    elif(j[0]!="var"):
+        r=i
 for i in tmp_vars:
     vars[i]=binaryconverter(tmp)
     tmp+=1
@@ -90,8 +92,10 @@ for i in range(1,len(tmp_labels+1)):
     labels[tmp_labels[i-1]]=binaryconverter(i)
 halt=0    
 #For loop
-for i in range(len(Asscode)):
+for i in range(r+1,len(Asscode)):
     j=Asscode[i].split()
+    if(j[0]=="var"):
+        errors.append(f'Error at line {i+1} : Variables not declared at the beginning}
     if (j[0] == "mov" and len(j) == 3):
         if (reg_address(j[2]) != -1):
             if (reg_address(j[1])==-1):
