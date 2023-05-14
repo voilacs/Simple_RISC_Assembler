@@ -206,7 +206,14 @@ if(InstructionType(asscode[-1][0])=='f'):
         halt=1
         if(halt==0):
             errors.append(f'Error in line {i+1} : Halt instruction missing')    
-  
+if(len(binary)>128):
+    print("ERROR: Length of code out of range(>128)")
+elif (len(errors)!=0):
+    for i in errors:
+        print(i)
+else:
+    for i in binary:
+        print(i)                         
     
   
                    
