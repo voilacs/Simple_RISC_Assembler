@@ -140,6 +140,38 @@ for i in range(len(Asscode)):
         continue
       abc=binary8bit(int(j[2][1::]))
       binary.append(opcode_return(j[0]) + registerAddress(j[1]) + abc)
+    if (InstructionType(j[0]) == 'c'):
+        errors.append("ERROR at Line " + str( i + 1) + ": syntax used for instruction is wrong")
+        continue
+    elif (InstructionType(j[0]) == 'c' and len(j) == 3):
+        if (reg_address(j[1]) == -1 or reg_address(j[2]) == -1):
+            errors.append("ERROR at Line " + str(i + 1) + ": register is invalid")
+            continue
+        if(reg_address(j[1]) == "111" or reg_address(j[2]) == "111"):
+            errors.append("ERROR at Line " + str(i + 1) + ": Illegal usage of flags")
+            continue
+        binary.append(binaryconverter(opcode_return(j[0]) + "00000" + reg_address(j[1]) + reg_address(j[2])))
+        continue
+    if (InstructionType(j[0]) == 'd'):
+        errors.append("ERROR at Line " + str(i + 1) + ": Wrong Syntax used for instruction")
+        continue
+    elif (InstructionType(j[0]) == 'd' and len(j) == 3):
+        if (reg_address(j[1]) == -1):
+            errors.append("ERROR at Line " + str(j + 1) + ": Invalid Register")
+            continue
+        if(reg_address(j[1]) == "111"):
+            errors.append("ERROR at Line " + str(j + 1) + ": Illegal use of FLAGS")
+            continue
+        if (j[2] not in vars):
+            if(j[2] in labels.keys()):
+                errors.append("ERROR at Line " + str(j + 1) + ": label misused as variable")
+                continue
+            else:
+                errors.append("ERROR at Line " + str(j + 1) + ": variable used is undefined")
+                continue
+        else:
+            binary.append(binaryconverter(opcode_return(j[0]) + reg_address(j[1]) + vars[i[2]]))
+            continue
 
       if(InstructionType(j[0])=='e'):
         if(len(j)!=2):
