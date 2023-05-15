@@ -10,17 +10,6 @@ def binaryconverter(number):
         l.insert(0,'0')
     binary_string = ''.join(l)
     return binary_string
-def float_bin(number, places = 3):
-    """ only give a float number between 0 and 15, change places to places =4 if you need more range!"""
-	whole, dec = str(number).split(".")
-	whole = int(whole)
-	dec = int (dec)
-	res = bin(whole).lstrip("0b") + "."
-	for x in range(places):
-		whole, dec = str((decimal(dec)) * 2).split(".")
-		dec = int(dec)
-		res += whole
-	return res
 def decimal(num):
 	while num > 1:
 		num /= 10
@@ -109,9 +98,9 @@ for i in range(1,len(tmp_labels)+1):
 halt=0    
 for i in range(r,len(Asscode)-1):
     j=Asscode[i].split()
-    print(j)
     if(j[0]=="var"):
         errors.append(f'Error at line {i+1} : Variables not declared at the beginning')
+        continue
     if (j[0] == "mov" and len(j) == 3):
         if (reg_address(j[2]) != -1):
             if (reg_address(j[1])==-1):
@@ -121,7 +110,7 @@ for i in range(r,len(Asscode)-1):
             elif(reg_address(j[1]) != -1 and reg_address(j[2]) != -1):
                 binary.append(opcode_return(j[0], "reg") + "00000" + reg_address(j[1]) + reg_address(j[2]))
             continue
-        elif (j[2][1:len(j[2])].isdecimal()):
+        elif (j[2][1:len(j[2])].isnum()):
             a=int(j[2][1:len(j[2])])
             if (reg_address(j[1]) == -1):
                 errors.append(f'Error in line {i+1} : Typo in register name')
@@ -129,10 +118,12 @@ for i in range(r,len(Asscode)-1):
                 errors.append(f'Error in line {i+1} : Illegal use of FLAGS register')
             elif (a < 0 or a > 127):
                 errors.append(f'Error in line {i+1} : Immediate value out of range')
+            elif(j[2][0]!="$"):
+                errors.append(f'Error in line {i+1} : Wrong syntax for immediate value')
             elif(reg_address(j[1]) != -1 and a>=0 and a<=127):
                 binary.append(opcode_return(j[0],"imm") +"0"+ reg_address(j[1]) + binaryconverter(a))
             continue
-    elif (j[0] == "mov" and len(j)!=3):
+    elif (j[0] == "mov" and len(j)!=3 ):
         errors.append(f'Error in line {i+1} : Syntax Error')
         continue
     if (InstructionType(j[0]) == 'a' and len(j)!=4):
@@ -162,7 +153,7 @@ for i in range(r,len(Asscode)-1):
         errors.append(f'Error in line {i+1}: Flag invalid')
         continue
       binary.append(opcode_return(j[0]) + reg_address(j[1]) + binaryconverter(int(j[2][1::])))
-    if (InstructionType(j[0]) == 'c'):
+    if (InstructionType(j[0]) == 'c' and len(j)!=3):
         errors.append(f'Error in line {i+1}: Syntax used for instruction is wrong')
         continue
     elif (InstructionType(j[0]) == 'c' and len(j) == 3):
@@ -172,7 +163,7 @@ for i in range(r,len(Asscode)-1):
         if(reg_address(j[1]) == "111" or reg_address(j[2]) == "111"):
             errors.append(f'Error in line {i+1}: Illegal usage of flags')
             continue
-        binary.append(binaryconverter(opcode_return(j[0]) + "00000" + reg_address(j[1]) + reg_address(j[2])))
+        binary.append((opcode_return(j[0]) + "00000" + reg_address(j[1]) + reg_address(j[2])))
         continue
     if (InstructionType(j[0]) == 'd' and len(j)!=3):
         errors.append(f'Error in line {i+1}: Wrong syntax used for instruction')
@@ -214,7 +205,7 @@ for i in range(r,len(Asscode)-1):
         if(label_inst=="a"):
             binary.append(opcode_return(j[1]) + "00" + reg_address(j[2]) + reg_address(j[3]) + reg_address(j[4]))
         elif(label_inst=='b'):
-            binary.append(opcode_return(j[1]) + reg_address(j[2]) + binaryconverter(int(j[3][1::])))
+            binary.append(opcode_return(j[1]) +'0'+ reg_address(j[2]) + binaryconverter(int(j[3][1::])))
         elif(label_inst=='c'):
              binary.append(binaryconverter(opcode_return(j[1]) + "00000" + reg_address(j[2]) + reg_address(j[3])))
         elif(label_inst=='d'):
@@ -224,6 +215,9 @@ for i in range(r,len(Asscode)-1):
         continue  
     if (InstructionType(j[0])=='f'):
         errors.append(f'Error in line {i+1} : Hlt not being used as the last instruction')
+        halt+=1
+    elif(InstructionType(j[0])==-1):
+        errors.append(f'Error in line {i+1} : Invalid opedrand')
 if(InstructionType(asscode[-1])=='f'):
     j=asscode[-1].split()
     if(len(j)!=1):
@@ -236,17 +230,12 @@ elif(asscode[-1].split()[0][-1]==':' and InstructionType(asscode[-1].split()[1])
         binary.append(opcode_return("hlt")+'0'*11)
         halt=1
 if(halt==0):
-    errors.append(f'Error in line {i+1} : Halt instruction missing')    
+    errors.append(f'Error : Halt instruction missing')    
 if(len(binary)>128):
     print("ERROR: Length of code out of range(>128)")
 elif (len(errors)!=0):
     for i in errors:
-        print(i)
+        sys.stdout.write(i+"\n")
 else:
     for i in binary:
-        print(i)                         
-    
-                   
-                   
-                   
-                   
+        sys.stdout.write(i+"\n")
