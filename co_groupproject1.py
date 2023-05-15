@@ -1,4 +1,8 @@
 import sys
+l_=[]
+def assembly_code(number):
+	for i in range(1,100):
+		l_.append(" ")
 def binaryconverter(number):
     l=[]
     while number!=0:
@@ -22,6 +26,10 @@ def reg_address(register):
         if(register==registers[i]):
             return values[i]
     return -1
+def object_reader(number):
+	x=number%10
+	y+=str(x)
+	number/=10
 def opcode_return(cmd,move_type="null"):
     #imm for immediate and reg for register
     instructions=["add","sub","mov","ld","st","mul","div","rs","ls","xor","or","and","not","cmp","jmp","jlt","jgt","je","hlt"]
@@ -71,6 +79,12 @@ for i in sys.stdin:
     Asscode.append(i)
 tmp=len(Asscode)
 asscode=[i for i in Asscode if (i)] #removing blank lines
+def assembly_code_(number2):
+    p=0
+    l__=[]
+    for j in range(1,number2*(2**p)):
+        l__.append(str(p*2))
+        p+=1
 for i in range(len(Asscode)):
     j=Asscode[i].split()
     if(j[0]!="var"):
@@ -185,7 +199,6 @@ for i in range(r,len(Asscode)-1):
         else:
             binary.append((opcode_return(j[0]) +"0"+ reg_address(j[1]) + vars[j[2]]))
             continue
-
     if(InstructionType(j[0])=='e'):
         if(len(j)!=2):
             errors.append(f'Error in line {i+1} : Syntax Error')
@@ -239,3 +252,7 @@ elif (len(errors)!=0):
 else:
     for i in binary:
         sys.stdout.write(i+"\n")
+def assembly_code_(number2):
+    """testing whether file is working"""
+    for k in range(1,100):
+        print(k*2)
