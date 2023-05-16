@@ -75,9 +75,12 @@ vars=dict()
 labels=dict()
 tmp_labels=[]
 binary=[]
-for i in sys.stdin:
+r1=sys.stdin.readlines()
+for i in r1:
+    i=i.rstrip("\n")
     Asscode.append(i)
-tmp=len(Asscode)
+tmp=0
+lab=0
 asscode=[i for i in Asscode if (i)] #removing blank lines
 def assembly_code_(number2):
     p=0
@@ -99,18 +102,22 @@ for i in range(len(Asscode)):
 for i in tmp_vars:
     vars[i]=binaryconverter(tmp)
     tmp+=1
+    Asscode.pop(0)
 for i in range(len(Asscode)):
     j=Asscode[i].split()
     if j[0][-1]==':' and j[0][0:len(j[0])-1] not in tmp_labels:
         tmp_labels.append(j[0][0:len(j[0])-1])
+        labels[j[0][0:len(j[0])-1]]=binaryconverter(i)
     elif j[0][-1]==':' and j[0][0:len(j[0])-1] in tmp_labels:
         errors.append(f'Error in line {i+1} : Multiple usage of same labels')
     elif ":" in j:
         errors.append(f'Error in line {i+1} : invalid declaration of label')
-for i in range(1,len(tmp_labels)+1):
-    labels[tmp_labels[i-1]]=binaryconverter(i)
-halt=0    
-for i in range(r,len(Asscode)-1):
+    elif(InstructionType(j[0])=='e' and j[1][0:len(j[1])-1] not in tmp_labels):
+        tmp_labels.append(j[0][0:len(j[0])-1])
+        labels[j[0][0:len(j[0])-1]]=binaryconverter(i)
+halt=0
+var_loc=len(Asscode)    
+for i in range(len(Asscode)-1):
     j=Asscode[i].split()
     if(j[0]=="var"):
         errors.append(f'Error at line {i+1} : Variables not declared at the beginning')
@@ -124,7 +131,7 @@ for i in range(r,len(Asscode)-1):
             elif(reg_address(j[1]) != -1 and reg_address(j[2]) != -1):
                 binary.append(opcode_return(j[0], "reg") + "00000" + reg_address(j[1]) + reg_address(j[2]))
             continue
-        elif (j[2][1:len(j[2])].isnum()):
+        elif (j[2][1:len(j[2])].isdecimal()):
             a=int(j[2][1:len(j[2])])
             if (reg_address(j[1]) == -1):
                 errors.append(f'Error in line {i+1} : Typo in register name')
@@ -197,7 +204,8 @@ for i in range(r,len(Asscode)-1):
                 errors.append(f'Error in line {i+1}: Variable used is undefined')
                 continue
         else:
-            binary.append((opcode_return(j[0]) +"0"+ reg_address(j[1]) + vars[j[2]]))
+            binary.append((opcode_return(j[0]) +"0"+ reg_address(j[1]) + binaryconverter(var_loc)))
+            var_loc+=1
             continue
     if(InstructionType(j[0])=='e'):
         if(len(j)!=2):
@@ -218,11 +226,12 @@ for i in range(r,len(Asscode)-1):
         if(label_inst=="a"):
             binary.append(opcode_return(j[1]) + "00" + reg_address(j[2]) + reg_address(j[3]) + reg_address(j[4]))
         elif(label_inst=='b'):
-            binary.append(opcode_return(j[1]) +'0'+ reg_address(j[2]) + binaryconverter(int(j[3][1::])))
+            binary.append(opcode_return(j[1],"imm") +'0'+ reg_address(j[2]) + binaryconverter(int(j[3][1::])))
         elif(label_inst=='c'):
-             binary.append(binaryconverter(opcode_return(j[1]) + "00000" + reg_address(j[2]) + reg_address(j[3])))
+             binary.append(binaryconverter(opcode_return(j[1],"reg") + "00000" + reg_address(j[2]) + reg_address(j[3])))
         elif(label_inst=='d'):
-            binary.append((opcode_return(j[1]) +"0"+ reg_address(j[2]) + vars[j[3]]))
+            binary.append((opcode_return(j[1]) +"0"+ reg_address(j[2]) + binaryconverter(var_loc)))
+            var_loc+=1
         elif(label_inst=='e'):
            binary.append(opcode_return(j[1])+'0'*4+labels[j[2]])
         continue  
@@ -230,7 +239,7 @@ for i in range(r,len(Asscode)-1):
         errors.append(f'Error in line {i+1} : Hlt not being used as the last instruction')
         halt+=1
     elif(InstructionType(j[0])==-1):
-        errors.append(f'Error in line {i+1} : Invalid opedrand')
+        errors.append(f'Error in line {i+1} : Invalid operand')
 if(InstructionType(asscode[-1])=='f'):
     j=asscode[-1].split()
     if(len(j)!=1):
@@ -243,16 +252,12 @@ elif(asscode[-1].split()[0][-1]==':' and InstructionType(asscode[-1].split()[1])
         binary.append(opcode_return("hlt")+'0'*11)
         halt=1
 if(halt==0):
-    errors.append(f'Error : Halt instruction missing')    
+    errors.append(f'Error : Halt instruction missing')
 if(len(binary)>128):
     print("ERROR: Length of code out of range(>128)")
 elif (len(errors)!=0):
     for i in errors:
-        sys.stdout.write(i+"\n")
+        sys.stdout.write(str(i)+"\n")
 else:
     for i in binary:
-        sys.stdout.write(i+"\n")
-def assembly_code_(number2):
-    """testing whether file is working"""
-    for k in range(1,100):
-        print(k*2)
+        sys.stdout.write(str(i)+"\n")
