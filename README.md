@@ -98,5 +98,5 @@ je mem_addr E
 Stops the machinefrom executing until reset
 hlt F
 
-For assigning a memory address to a variable we have used length of the code as first address and then kept incrementing it by 1.
-For assigning a memory address to a label we have used the (line number -1) as the address of the label in that particular line.
+For assigning a memory address to a variable we have used length of the code(after popping lines starting with var) as first address and then kept incrementing it by 1.
+For assigning a memory address to a label we have used the line number as the address of the label in that particular line.
