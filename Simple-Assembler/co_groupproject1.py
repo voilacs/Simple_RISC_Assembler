@@ -109,9 +109,9 @@ for i in range(len(Asscode)):
         tmp_labels.append(j[0][0:len(j[0])-1])
         labels[j[0][0:len(j[0])-1]]=binaryconverter(i)
     elif j[0][-1]==':' and j[0][0:len(j[0])-1] in tmp_labels:
-        errors.append(f'Error in line {i+1} : Multiple usage of same labels')
+        errors.append(f'Error in line {i+tmp+1} : Multiple usage of same labels')
     elif ":" in j:
-        errors.append(f'Error in line {i+1} : invalid declaration of label')
+        errors.append(f'Error in line {i+tmp+1} : invalid declaration of label')
     elif(InstructionType(j[0])=='e' and j[1][0:len(j[1])-1] not in tmp_labels):
         tmp_labels.append(j[0][0:len(j[0])-1])
         labels[j[0][0:len(j[0])-1]]=binaryconverter(i)
@@ -120,88 +120,88 @@ var_loc=len(Asscode)
 for i in range(len(Asscode)-1):
     j=Asscode[i].split()
     if(j[0]=="var"):
-        errors.append(f'Error at line {i+1} : Variables not declared at the beginning')
+        errors.append(f'Error at line {i+tmp+1} : Variables not declared at the beginning')
         continue
     if (j[0] == "mov" and len(j) == 3):
         if (reg_address(j[2]) != -1):
             if (reg_address(j[1])==-1):
-                errors.append(f'Error in line {i+1} : Typo in register name')
+                errors.append(f'Error in line {i+tmp+1} : Typo in register name')
             elif(reg_address(j[1]) == "111"):
-                errors.append(f'Error in line {i+1} : Illegal use of FLAGS register')
+                errors.append(f'Error in line {i+tmp+1} : Illegal use of FLAGS register')
             elif(reg_address(j[1]) != -1 and reg_address(j[2]) != -1):
                 binary.append(opcode_return(j[0], "reg") + "00000" + reg_address(j[1]) + reg_address(j[2]))
             continue
         elif (j[2][1:len(j[2])].isdecimal()):
             a=int(j[2][1:len(j[2])])
             if (reg_address(j[1]) == -1):
-                errors.append(f'Error in line {i+1} : Typo in register name')
+                errors.append(f'Error in line {i+tmp+1} : Typo in register name')
             elif(reg_address(j[1]) == "111"):
-                errors.append(f'Error in line {i+1} : Illegal use of FLAGS register')
+                errors.append(f'Error in line {i+tmp+1} : Illegal use of FLAGS register')
             elif (a < 0 or a > 127):
-                errors.append(f'Error in line {i+1} : Immediate value out of range')
+                errors.append(f'Error in line {i+tmp+1} : Immediate value out of range')
             elif(j[2][0]!="$"):
-                errors.append(f'Error in line {i+1} : Wrong syntax for immediate value')
+                errors.append(f'Error in line {i+tmp+1} : Wrong syntax for immediate value')
             elif(reg_address(j[1]) != -1 and a>=0 and a<=127):
                 binary.append(opcode_return(j[0],"imm") +"0"+ reg_address(j[1]) + binaryconverter(a))
             continue
     elif (j[0] == "mov" and len(j)!=3 ):
-        errors.append(f'Error in line {i+1} : Syntax Error')
+        errors.append(f'Error in line {i+tmp+1} : Syntax Error')
         continue
     if (InstructionType(j[0]) == 'a' and len(j)!=4):
-      errors.append(f'Error in line {i+1}: Syntax error')
+      errors.append(f'Error in line {i+tmp+1}: Syntax error')
     elif (InstructionType(j[0]) == 'a' and len(j) == 4):
             if (reg_address(j[1]) == -1 or reg_address(j[2]) == -1 or reg_address(j[3]) == -1):
-              errors.append(f'Error in line {i+1}: Register not valid')
+              errors.append(f'Error in line {i+tmp+1}: Register not valid')
             elif (reg_address(j[1]) == "111" or reg_address(j[2]) == "111" or reg_address(j[3]) == "111"):
-              errors.append(f'Error in line {i+1}: Invalid flag')
+              errors.append(f'Error in line {i+tmp+1}: Invalid flag')
             else:
               binary.append(opcode_return(j[0]) + "00" + reg_address(j[1]) + reg_address(j[2]) + reg_address(j[3]))
 
     if (InstructionType(j[0]) == 'b' and len(j)!=3):
-      errors.append(f'Error in line {i+1}: Invalid syntax')
+      errors.append(f'Error in line {i+tmp+1}: Invalid syntax')
       continue
     elif (InstructionType(j[0]) == 'b' and len(j) == 3):
       if(reg_address(j[1])==-1):
-        errors.append(f'Error in line {i+1}: Register not valid')
+        errors.append(f'Error in line {i+tmp+1}: Register not valid')
         continue
       if (j[2][0] != "$"):
-        errors.append(f'Error in line {i+1}:Syntax Invalid')
+        errors.append(f'Error in line {i+tmp+1}:Syntax Invalid')
         continue
       if(int(j[2][1::]) not in range(0,128)):
-        errors.append(f'Error in line {i+1}: Immediate value wrong')
+        errors.append(f'Error in line {i+tmp+1}: Immediate value wrong')
         continue
       if(reg_address(j[1]) == "111"):
-        errors.append(f'Error in line {i+1}: Flag invalid')
+        errors.append(f'Error in line {i+tmp+1}: Flag invalid')
         continue
       binary.append(opcode_return(j[0]) + reg_address(j[1]) + binaryconverter(int(j[2][1::])))
     if (InstructionType(j[0]) == 'c' and len(j)!=3):
-        errors.append(f'Error in line {i+1}: Syntax used for instruction is wrong')
+        errors.append(f'Error in line {i+tmp+1}: Syntax used for instruction is wrong')
         continue
     elif (InstructionType(j[0]) == 'c' and len(j) == 3):
         if (reg_address(j[1]) == -1 or reg_address(j[2]) == -1):
-            errors.append(f'Error in line {i+1}: Register is invalid')
+            errors.append(f'Error in line {i+tmp+1}: Register is invalid')
             continue
         if(reg_address(j[1]) == "111" or reg_address(j[2]) == "111"):
-            errors.append(f'Error in line {i+1}: Illegal usage of flags')
+            errors.append(f'Error in line {i+tmp+1}: Illegal usage of flags')
             continue
         binary.append((opcode_return(j[0]) + "00000" + reg_address(j[1]) + reg_address(j[2])))
         continue
     if (InstructionType(j[0]) == 'd' and len(j)!=3):
-        errors.append(f'Error in line {i+1}: Wrong syntax used for instruction')
+        errors.append(f'Error in line {i+tmp+1}: Wrong syntax used for instruction')
         continue
     elif (InstructionType(j[0]) == 'd' and len(j) == 3):
         if (reg_address(j[1]) == -1):
-            errors.append(f'Error in line {i+1}: Invalid register')
+            errors.append(f'Error in line {i+tmp+1}: Invalid register')
             continue
         if(reg_address(j[1]) == "111"):
-            errors.append(f'Error in line {i+1}: Illegal use of flags')
+            errors.append(f'Error in line {i+tmp+1}: Illegal use of flags')
             continue
         if (j[2] not in vars):
             if(j[2] in labels.keys()):
-                errors.append(f'Error in line {i+1}: Label misused as variable')
+                errors.append(f'Error in line {i+tmp+1}: Label misused as variable')
                 continue
             else:
-                errors.append(f'Error in line {i+1}: Variable used is undefined')
+                errors.append(f'Error in line {i+tmp+1}: Variable used is undefined')
                 continue
         else:
             binary.append((opcode_return(j[0]) +"0"+ reg_address(j[1]) + binaryconverter(var_loc)))
@@ -209,15 +209,15 @@ for i in range(len(Asscode)-1):
             continue
     if(InstructionType(j[0])=='e'):
         if(len(j)!=2):
-            errors.append(f'Error in line {i+1} : Syntax Error')
+            errors.append(f'Error in line {i+tmp+1} : Syntax Error')
             continue
         else:
             if(j[1] not in labels.keys()):
-                errors.append(f'Error in line {i+1} : Use of undefined labels')
+                errors.append(f'Error in line {i+tmp+1} : Use of undefined labels')
                 continue
             else:
                 if(j[0] in vars.keys()):
-                    errors.append(f'Error in line {i+1} : Misuse of variable as label')
+                    errors.append(f'Error in line {i+tmp+1} : Misuse of variable as label')
                 else:
                     binary.append(opcode_return(j[0])+'0'*4+labels[j[1]])  
                 continue
@@ -236,14 +236,14 @@ for i in range(len(Asscode)-1):
            binary.append(opcode_return(j[1])+'0'*4+labels[j[2]])
         continue  
     if (InstructionType(j[0])=='f'):
-        errors.append(f'Error in line {i+1} : Hlt not being used as the last instruction')
+        errors.append(f'Error in line {i+tmp+1} : Hlt not being used as the last instruction')
         halt+=1
     elif(InstructionType(j[0])==-1):
-        errors.append(f'Error in line {i+1} : Invalid operand')
+        errors.append(f'Error in line {i+tmp+1} : Invalid operand')
 if(InstructionType(asscode[-1])=='f'):
     j=asscode[-1].split()
     if(len(j)!=1):
-        errors.append(f'Error in line {i+1} : Syntax Error')
+        errors.append(f'Error in line {i+tmp+1} : Syntax Error')
         halt=1
     else:
         binary.append(opcode_return(j[0])+'0'*11)
