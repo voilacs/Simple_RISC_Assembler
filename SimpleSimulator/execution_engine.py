@@ -1,6 +1,8 @@
 import math
+import sys
 # line 30 tak sab kuchh bas initialize hi ho raha hai uske baad code hai kuch
 # jump ke alawa saare opcodes ke liye pc_counter+=1 zaroor karein
+pc_counter=0
 flagreg="0000000000000000"
 registers=['000', '001', '010', '011', '100', '101', '110']
 regval=[0, 0, 0, 0, 0, 0, 0]
@@ -51,3 +53,35 @@ def intconverter(binary):
                 c+=d*(math.pow(2,i))
                 binary=binary//10
         return binary
+
+memory = []
+for i in stdin:
+        memory.append(i.rstrip("\n"))
+if len(memory) < 128:
+        lineDiff = 128 - len(memory)
+while lineDiff:
+        memory.append("0000000000000000")
+        lineDiff=lineDiff-1
+
+def getData(memory,PC):
+    return memory[PC]
+
+# def dump_memory(memory):
+#     Function to dump the memory onto stdout
+#     for ins in memory:
+#         print(ins)
+        
+def getAddress(memory, memoryAddress):
+    return intconverter(memoryAddress)
+
+def setAddress(memory, memoryAddress,Value):
+    memory[intconverter(memoryAddress)] = binaryconverter(Value)
+
+#     memory = initialize_memory()
+#     dump_memory(memory)
+#     data = get_data(memory, 0)
+#     print(data)
+#     value = get_value_from_address(memory, '00000000')
+#     print(value)
+#     set_value_of_address(memory, '00000000', 42)
+#     dump_memory(memory)
