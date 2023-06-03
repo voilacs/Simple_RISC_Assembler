@@ -10,9 +10,7 @@ def restore_default_reg(self):
         self.flagRegister = "0000000000000000"
 def checkOverflow(value):
     '''
-    Checks if the value exceeds the range of the registers or not i.e. is it greater than (2^16-1)
-    \n\tvalue: An integer value to be passed. The value stored in the register
-    \n\tReturns a boolean: True-> overflow      False-> No Overflow
+    returns true if the range of register's value is exceeded.
     '''
     if(value > (2**16 - 1)):
         return True
