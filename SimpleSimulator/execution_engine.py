@@ -1,3 +1,4 @@
+import math
 # line 30 tak sab kuchh bas initialize hi ho raha hai uske baad code hai kuch
 # jump ke alawa saare opcodes ke liye pc_counter+=1 zaroor karein
 flagreg="0000000000000000"
@@ -41,4 +42,12 @@ def binaryconverter(number,bit=1):
                 l.insert(0,'0')
     binary_string = ''.join(l)
     return binary_string
-
+def intconverter(binary):
+        d=0
+        c=0
+        i=0
+        while(binary>0):
+                d=binary%10
+                c+=d*(math.pow(2,i))
+                binary=binary//10
+        return binary
