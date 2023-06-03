@@ -25,15 +25,20 @@ def checkOverflow(value):
 #                 RF.setOverflowFlag()
 #             else:
 #                 RF.resetFlagRegister()
-def binaryconverter(number):
+def binaryconverter(number,bit=1):
+    #give bit=0 for PC and bit=1 otherwise    
     l=[]
     while number!=0:
         rem=str(number%2)
         l.append(rem)
         number=number//2
-    l.reverse()        
-    while len(l) < 7:
-        l.insert(0,'0')
+    l.reverse()
+    if(bit==1):    
+            while len(l) < 16:
+                l.insert(0,'0')
+    else:
+        while len(l) < 7:
+                l.insert(0,'0')
     binary_string = ''.join(l)
     return binary_string
 
