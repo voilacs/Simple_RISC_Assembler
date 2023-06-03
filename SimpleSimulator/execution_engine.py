@@ -7,7 +7,7 @@ def restore_default_reg(self):
         '''
         refreshes the value of flag register to the default value set at the start of program
         '''
-        self.flagRegister = "0000000000000000"
+        flagRegister = "0000000000000000"
 def checkOverflow(value):
     '''
     returns true if the range of register's value is exceeded.
@@ -19,7 +19,7 @@ def checkOverflow(value):
 #flagRegister = "0000000000000100"  use this line of code to set flag of less than
 #flagRegister = "0000000000000010"  use this line of code to set flag of greater than
 #flagRegister = "0000000000000001"  This flag is set by the "cmp reg1 reg2" instruction if reg1 = reg2
-#print(self.flagRegister, end=" ") prints the current value of flag register
+#print(flagRegister, end=" ") prints the current value of flag register
 #yeh neeche if else wali harkat mat karna hamara code mein vahin per flagregister set karna padega
 # if(checkOverflow(res)):
 #                 RF.setOverflowFlag()
