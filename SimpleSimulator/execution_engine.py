@@ -57,6 +57,7 @@ def intconverter(binary):
 memory = []
 for i in stdin:
         memory.append(i.rstrip("\n"))
+code=memory.copy()
 if len(memory) < 128:
         lineDiff = 128 - len(memory)
 while lineDiff:
@@ -76,7 +77,25 @@ def getAddress(memory, memoryAddress):
 
 def setAddress(memory, memoryAddress,Value):
     memory[intconverter(memoryAddress)] = binaryconverter(Value)
-
+for i in range(len(code)):
+        j=code[i]
+        op_code=j[0:5]
+        if(op_code="00000" or op_code="00001"):
+                r1=j[7:10]
+                r2=j[10:13]
+                r3=j[13:16]
+                a=getRegister(r2)
+                b=getRegister(r3)
+                if(op_code="00000"):
+                        c=a+b
+                        if(checkOverflow(c)):
+                                setOverflow()
+                        else:
+                 eliif(op_code="00001"):
+                        c=a-b
+                        if(checkOverflow(c)):
+                                setOverflow()
+                        else:
 #     memory = initialize_memory()
 #     dump_memory(memory)
 #     data = get_data(memory, 0)
