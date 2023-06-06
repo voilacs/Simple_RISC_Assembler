@@ -52,7 +52,7 @@ def intconverter(binary):
                 d=binary%10
                 c+=d*(math.pow(2,i))
                 binary=binary//10
-        return binary
+        return binary   
 def getData(memory,PC):
     return memory[PC]
 
@@ -135,6 +135,104 @@ for i in range(len(code)):
                 a=getRegister(r1)
                 b=getRegister(r2)
                 c=a^b
+        elif(op_code="01011"):
+            reg1 = instruction[ 7:10:]
+            reg2 = instruction[10:13:] 
+            reg3 = instruction[13:16:]
+            res = getreg(reg2,False) | getreg(reg3,False)
+            setreg(reg1,res)
+            restore_default_reg()
+            halt=False
+            pc_counter+=1
+         elif(op_code == "01100"):
+            reg1 = instruction[ 7:10:]      # reading address of reg1
+            reg2 = instruction[10:13:]      # reading address of reg2
+            reg3 = instruction[13:16:]      # reading address of reg3
+            res = getreg(reg2,False) & getreg(reg3,False)
+            setreg(reg1,res)
+            restore_default_reg()
+            halt=False
+            pc_counter+=1
+        elif(op_code == "01101"):
+            reg1 = instruction[10:13:]      # Reading address of reg1
+            reg2 = instruction[13::]        # Reading address of reg2
+            inverted = ""
+            for bit in reg2:
+                if bit=='1':
+                    inverted += '0'
+                else:
+                    inverted += '1'
+            setreg(reg1, int(inverted, 2))
+            restore_default_reg()
+            halt=False
+            pc_counter+=1
+        elif(op_code == "01110"):
+            reg1 = instruction[10:13:]  
+            reg2 = instruction[13::]
+            if getreg(reg1, False) < getreg(reg2, False):
+                flagRegister = "0000000000000100"
+            elif getreg(reg1, False) > getreg(reg2, False):
+                flagRegister = "0000000000000010"
+            else:
+                flagRegister = "0000000000000001"
+            halt=False
+            pc_counter+=1
+        elif(op_code == "01111"):
+            # jmp unused mem_addr
+            # 5   3      8
+            memoryAddress = instruction[8::]
+            (halt, pc_counter) = (False, int(memoryAddress,2))
+            restore_default_reg()
+        elif(op_code == "11100"):
+            # jlt unused mem_addr
+            # 5   3      8
+            if RF.flagRegister == "0000000000000100":
+                memoryAddress = instruction[8::]
+                (halt, pc_counter) = (False, int(memoryAddress,2))
+            else:
+                (halt, pc_counter) = (False, pc_counter+1)
+            restore_default_reg()
+        elif(op_code == "11101"):
+            # jgt unused mem_addr
+            # 5   3      8
+            if RF.flagRegister == "0000000000000010":
+                memoryAddress = instruction[8::]
+                (halt, pc_counter) = (False, int(memoryAddress,2))
+            else:
+                (halt, pc_counter) = (False, pc_counter+1)
+            restore_default_reg()
+        elif(op_code == "11111"):
+            if flagRegister == "0000000000000001":
+                memoryAddress = instruction[8::]
+                (halt, pc_counter) = (False, int(memoryAddress,2))
+            else:
+                (halt, pc_counter) = (False, pc_counter+1)
+            restore_default_reg()
+        # ........................................................................................................................
+
+        elif(op_code == "11010"):
+            restore_default_reg()
+            (halt, newpc) = (True, pc_counter+ 1)
+        elif(op_code=="10000"):
+                r1=j[7:10]
+                r2=j[10:13]
+                r3=j[13:16]
+                a=getRegister(r2)
+                b=getRegister(r3)
+                if(op_code="00000"):
+                        c=a+b
+                        if(checkOverflow(c)):
+                                setOverflow()
+                        else:
+                                index=registers.index(r1)
+                                regvalue[index]=binaryconverter(c)
+                elif(op_code="00001"):
+                        c=a-b
+                        if(checkOverflow(c)):
+                                setOverflow()
+                        else:
+                                index=registers.index(r1)
+                                regvalue[index]=binaryconverter(c)
 #     memory = initialize_memory()
 #     dump_memory(memory)
 #     data = get_data(memory, 0)
