@@ -89,7 +89,52 @@ for i in range(len(code)):
                         else:
                                 index=registers.index(r1)
                                 regvalue[index]=binaryconverter(c)
-        
+        elif(op_code="00010"):
+                r1=j[6:9]
+                immediate=intconverter(j[9:])
+        elif(op_code="00011"):
+                r1=j[10:13]
+                r2=j[13:16]
+        elif(op_code="00100"):
+                r1=j[5:8]
+                adr=j[8:]
+        elif(op_code="00101"):
+                r1=j[5:8]
+                adr=j[8:]
+        elif(op_code="00110"):
+                r1 = j[7:10]
+                r2 = j[10:13]
+                r3 = j[13:]
+                a=getRegister(r2)
+                b=getRegister(r3)
+                c=a*b
+                if(checkOverflow(c)):
+                        setOverflow()
+                else:
+                        index=registers.index(r1)
+                        regvalue[index]=binaryconverter(c)
+        elif(op_code="00111"):
+                r1=j[10:13]
+                r2=j[13:]
+                a=getRegister(r1)
+                b=getRegister(r2)
+                rem=a%b
+                quot=a//b
+        elif(op_code="01000"):
+                r1=j[5:8]
+                immediate=intconverter(j[8:])
+                ss='0'*immediate+getRegister(r1)[:len(getRegister)-immediate]
+        elif(op_code="01001"):
+                r1=j[5:8]
+                immediate=intconverter(j[8:])
+                ss=getRegister(r1)[:len(getRegister)-immediate]+'0'*immediate
+        elif(op_code="01010"):
+                r1=j[7:10]
+                r2=j[10:13]
+                r3=j[13:]
+                a=getRegister(r1)
+                b=getRegister(r2)
+                c=a^b
 #     memory = initialize_memory()
 #     dump_memory(memory)
 #     data = get_data(memory, 0)
@@ -98,6 +143,48 @@ for i in range(len(code)):
 #     print(value)
 #     set_value_of_address(memory, '00000000', 42)
 #     dump_memory(memory)
+flagreg = "0000000000000000" 
+def reset():
+    global flagreg
+    flagreg = "0000000000000000"
+def setoverflow():
+    global flagreg
+    flagreg = "0000000000001000"
+def setless():
+    global flagreg
+    flagreg = "0000000000000100"
+def setmore():
+    global flagreg
+    flagreg = "0000000000000010"
+def setequal():
+    global flagreg
+    flagreg = "0000000000000001"
+def setreg(r, v):
+    global register_dict
+    if (not checkOverflow(value)):
+        register_dict[r] = v
+    else:
+        rawBinary = bin(value)[2:]
+        register_dict[r] = int(rawBinary[-16:], 2)
+def getreg(registerAddress, binaryOrDecimal):
+    global register_dict, flagreg
+    if binaryOrDecimal:
+        if registerAddress == "111":
+            return flagreg
+        rawBinary = bin(register_dict[registerAddress])[2:]
+        if len(rawBinary) > 16:
+            return rawBinary[-16:]
+        else:
+            return intToBinary16bit(register_dict[registerAddress])
+    else:
+        if registerAddress == "111":
+            return int(flagreg, 2)
+        return register_dict[registerAddress]
+def dump():
+    global register_dict, flagreg
+    for key in register_dict.keys():
+        print(intToBinary16bit(register_dict[key]), end=" ")
+    print(flagreg)
 def execute_program():
         global code
         memory = []
