@@ -53,17 +53,6 @@ def intconverter(binary):
                 c+=d*(math.pow(2,i))
                 binary=binary//10
         return binary
-
-memory = []
-for i in stdin:
-        memory.append(i.rstrip("\n"))
-code=memory.copy()
-if len(memory) < 128:
-        lineDiff = 128 - len(memory)
-while lineDiff:
-        memory.append("0000000000000000")
-        lineDiff=lineDiff-1
-
 def getData(memory,PC):
     return memory[PC]
 
@@ -91,11 +80,16 @@ for i in range(len(code)):
                         if(checkOverflow(c)):
                                 setOverflow()
                         else:
-                 eliif(op_code="00001"):
+                                index=registers.index(r1)
+                                regvalue[index]=binaryconverter(c)
+                elif(op_code="00001"):
                         c=a-b
                         if(checkOverflow(c)):
                                 setOverflow()
                         else:
+                                index=registers.index(r1)
+                                regvalue[index]=binaryconverter(c)
+        
 #     memory = initialize_memory()
 #     dump_memory(memory)
 #     data = get_data(memory, 0)
@@ -104,3 +98,22 @@ for i in range(len(code)):
 #     print(value)
 #     set_value_of_address(memory, '00000000', 42)
 #     dump_memory(memory)
+def execute_program():
+        global code
+        memory = []
+        for i in stdin:
+                memory.append(i.rstrip("\n"))
+        code=memory.copy()
+        if len(memory) < 128:
+                lineDiff = 128 - len(memory)
+        while lineDiff:
+                memory.append("0000000000000000")
+                lineDiff=lineDiff-1
+        pc = 0
+        halted = False
+        while not halted:
+                instruction = format(memory[pc], "016b")  # Get current instruction
+                halted, new_pc = execute(instruction)  # Execute the instruction
+                dump_state()  # Print PC and RF state
+                pc = new_pc if new_pc is not None else pc + 1  # Update PC
+        dump_memory()
