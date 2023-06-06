@@ -178,14 +178,10 @@ for i in range(len(code)):
             halt=False
             pc_counter+=1
         elif(op_code == "01111"):
-            # jmp unused mem_addr
-            # 5   3      8
             memoryAddress = instruction[8::]
             (halt, pc_counter) = (False, int(memoryAddress,2))
             restore_default_reg()
         elif(op_code == "11100"):
-            # jlt unused mem_addr
-            # 5   3      8
             if RF.flagRegister == "0000000000000100":
                 memoryAddress = instruction[8::]
                 (halt, pc_counter) = (False, int(memoryAddress,2))
@@ -193,8 +189,6 @@ for i in range(len(code)):
                 (halt, pc_counter) = (False, pc_counter+1)
             restore_default_reg()
         elif(op_code == "11101"):
-            # jgt unused mem_addr
-            # 5   3      8
             if RF.flagRegister == "0000000000000010":
                 memoryAddress = instruction[8::]
                 (halt, pc_counter) = (False, int(memoryAddress,2))
@@ -212,27 +206,7 @@ for i in range(len(code)):
 
         elif(op_code == "11010"):
             restore_default_reg()
-            (halt, newpc) = (True, pc_counter+ 1)
-        elif(op_code=="10000"):
-                r1=j[7:10]
-                r2=j[10:13]
-                r3=j[13:16]
-                a=getRegister(r2)
-                b=getRegister(r3)
-                if(op_code="00000"):
-                        c=a+b
-                        if(checkOverflow(c)):
-                                setOverflow()
-                        else:
-                                index=registers.index(r1)
-                                regvalue[index]=binaryconverter(c)
-                elif(op_code="00001"):
-                        c=a-b
-                        if(checkOverflow(c)):
-                                setOverflow()
-                        else:
-                                index=registers.index(r1)
-                                regvalue[index]=binaryconverter(c)
+            (halt, pc_counter) = (True, pc_counter+ 1)
 #     memory = initialize_memory()
 #     dump_memory(memory)
 #     data = get_data(memory, 0)
