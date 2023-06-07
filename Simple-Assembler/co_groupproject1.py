@@ -116,10 +116,8 @@ for i in range(len(Asscode)):
     if(j[0]!="var"):
         r=i
         break
-    elif(j[0]=="var" and len(j)==2 and j[1] not in tmp_vars):
+    elif(j[0]=="var" and len(j)==2):
         tmp_vars.append(j[1])
-    elif(j[0]=="var" and len(j)==2 and j[1] in tmp_vars):
-        errors.append(f'Error in line {i+1} : Multiple usage of same variable')
     elif(j[0]=="var" and len(j)!=2):
         errors.append(f'Error in line {i+1} : Invalid declaration of variable')
 for i in tmp_vars:
@@ -139,7 +137,10 @@ for i in range(len(Asscode)):
         tmp_labels.append(j[0][0:len(j[0])-1])
         labels[j[0][0:len(j[0])-1]]=binaryconverter(i)
 halt=0
-var_loc=len(Asscode)    
+var_loc=len(Asscode)
+for i in vars:
+    vars[i]=binaryconverter(var_loc)
+    var_loc+=1       
 for i in range(len(Asscode)-1):
     j=Asscode[i].split()
     if(j[0]=="var"):
@@ -209,7 +210,7 @@ for i in range(len(Asscode)-1):
       if(reg_address(j[1]) == "111"):
         errors.append(f'Error in line {i+tmp+1}: Flag invalid')
         continue
-      binary.append(opcode_return(j[0]) + reg_address(j[1]) + binaryconverter(int(j[2][1::])))
+      binary.append(opcode_return(j[0]) +'0'+ reg_address(j[1]) + binaryconverter(int(j[2][1::])))
     if (InstructionType(j[0]) == 'c' and len(j)!=3):
         errors.append(f'Error in line {i+tmp+1}: Syntax used for instruction is wrong')
         continue
@@ -240,7 +241,7 @@ for i in range(len(Asscode)-1):
                 errors.append(f'Error in line {i+tmp+1}: Variable used is undefined')
                 continue
         else:
-            binary.append((opcode_return(j[0]) +"0"+ reg_address(j[1]) + binaryconverter(var_loc)))
+            binary.append((opcode_return(j[0]) +"0"+ reg_address(j[1]) + vars[j[2]]))
             var_loc+=1
             continue
     if(InstructionType(j[0])=='e'):
@@ -266,7 +267,7 @@ for i in range(len(Asscode)-1):
         elif(label_inst=='c'):
              binary.append(binaryconverter(opcode_return(j[1],"reg") + "00000" + reg_address(j[2]) + reg_address(j[3])))
         elif(label_inst=='d'):
-            binary.append((opcode_return(j[1]) +"0"+ reg_address(j[2]) + binaryconverter(var_loc)))
+            binary.append((opcode_return(j[1]) +"0"+ reg_address(j[2]) + vars[j[3]]))
             var_loc+=1
         elif(label_inst=='e'):
            binary.append(opcode_return(j[1])+'0'*4+labels[j[2]])

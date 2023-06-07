@@ -259,7 +259,7 @@ def execute(j,pc,memory):
         r1 = j[10:13]
         r2 = j[13:]
         inverted = ""
-        for bit in r2:
+        for bit in regvalue[registers.index(r2)]:
             if bit == '1':
                 inverted += '0'
             else:
@@ -280,13 +280,13 @@ def execute(j,pc,memory):
         return False, pc_counter+1
     elif op_code == "01111":
         memoryAddress = j[8:]
-        pc_counter = int(memoryAddress, 2)
+        pc_counter = intconverter(memoryAddress)
         reset()
         return False, pc_counter
     elif op_code == "11100":
-        if flagreg == "0000000000000100":
+        if regvalue[-1] == "0000000000000100":
             memoryAddress = j[8:]
-            pc_counter = int(memoryAddress, 2)
+            pc_counter = intconverter(memoryAddress)
             reset()
             return False, pc_counter
         else:
@@ -294,9 +294,9 @@ def execute(j,pc,memory):
             reset()
             return False, pc_counter
     elif op_code == "11101":
-        if flagreg == "0000000000000010":
+        if regvalue[-1] == "0000000000000010":
             memoryAddress = j[8:]
-            pc_counter = int(memoryAddress, 2)
+            pc_counter = intconverter(memoryAddress)
             reset()
             return False, pc_counter
         else:
@@ -304,9 +304,9 @@ def execute(j,pc,memory):
             reset()
             return False, pc_counter
     elif op_code == "11111":
-        if flagreg == "0000000000000001":
+        if regvalue[-1] == "0000000000000001":
             memoryAddress = j[8:]
-            pc_counter = int(memoryAddress, 2)
+            pc_counter = intconverter(memoryAddress)
             reset()
             return False, pc_counter
         else:
