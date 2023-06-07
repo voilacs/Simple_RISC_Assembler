@@ -46,8 +46,42 @@ def intconverter(binary):
         binary = binary // 10
         i+=1
     return int(c)
-
-
+def floating_point_to_decimal(floating_point):
+    exponent = floating_point[0:3]
+    mantissa = floating_point[3:8]
+    exponent_ = 0
+    mantissa_ = 0
+    bias = 2**(3-1) - 1  # Calculate the bias value
+    for i in range(2, -1, -1):
+        exponent_ += int(exponent[i]) * (2 ** (i))
+    exponent_ -= bias  # Subtract the bias value
+    for i in range(-1, -6, -1):
+        mantissa_ += int(mantissa[i]) * (2 ** (i))
+    floating_point_rep = (1+mantissa_ )* (2 ** exponent_)
+    return (floating_point_rep) 
+def decimal_to_floating_point(decimal_number):
+    decimal_number = abs(decimal_number)
+    integer_part = int(decimal_number)
+    fractional_part = decimal_number - integer_part
+    integer_binary = binaryconverter(integer_part)  # Remove the "0b" prefix
+    fractional_binary = ""
+    while fractional_part != 0:
+        fractional_part *= 2
+        bit = int(fractional_part)
+        fractional_binary += str(bit)
+        fractional_part -= bit
+    binary_representation = integer_binary + "." + fractional_binary
+    if len(binary_representation) > 8:
+        return 2
+    integer_part = binary_representation.split(".")[0]
+    fractional_part = binary_representation.split(".")[1]
+    exponent = len(integer_part) - 1
+    bias = 2**(3 - 1) - 1
+    exponent_ = exponent + bias
+    integer_part_5bit = integer_part[1:].zfill(3)
+    fractional_part_5bit = fractional_part[:5].ljust(5, "0")
+    floating_point_representation = bin(exponent_)[2:].zfill(3) + integer_part_5bit + fractional_part_5bit
+    return floating_point_representation
 
 
 def setAddress(memory, memoryAddress, Value):
@@ -71,6 +105,7 @@ def execute(j,pc,memory):
             c = a + b
             if checkOverflow(c):
                 setoverflow()
+                regvalue[registers.index(r1)]="0000000000000000"
             else:
                 index = registers.index(r1)
                 regvalue[index] = binaryconverter(c)
@@ -78,11 +113,45 @@ def execute(j,pc,memory):
             c = a - b
             if checkOverflow(c):
                 setoverflow()
+                regvalue[registers.index(r1)]="0000000000000000"
             else:
                 index = registers.index(r1)
                 regvalue[index] = binaryconverter(c)
         reset()
         return False, pc_counter+1
+    elif op_code == "10000" or op_code == "10001":
+        r1 = j[7:10]
+        r2 = j[10:13]
+        r3 = j[13:16]
+        a = regvalue[registers.index(r2)]
+        a = floating_point_to_decimal(a)
+        b = regvalue[registers.index(r3)]
+        b = floating_point_to_decimal(b)
+        if op_code == "10000":
+            c = a + b
+            if checkOverflow(c):
+                setoverflow()
+                regvalue[registers.index(r1)]="0000000000000000"
+            else:
+                index = registers.index(r1)
+                regvalue[index] = decimal_to_floating_point(c)
+        elif op_code == "10001":
+            c = a - b
+            if checkOverflow(c):
+                setoverflow()
+                regvalue[registers.index(r1)]="0000000000000000"
+            else:
+                index = registers.index(r1)
+                regvalue[index] = decimal_to_floating_point(c)
+        reset()
+        return False, pc_counter+1
+    elif(op_code=="10010"):
+        r1=j[5:8]
+        immediate=j[8:]
+        index=registers.index(r1)
+        regvalue[index]=immediate
+        reset()
+        return False,pc_counter+1
     elif op_code == "00010":
         r1 = j[6:9]
         immediate = j[9:]
@@ -261,6 +330,7 @@ def reset():
 def setoverflow():
     global flagreg
     flagreg = "0000000000001000"
+    regvalue[-1]=flagreg
 
 
 def dump_state(pc):
@@ -291,8 +361,8 @@ def execute_program():
     halted = False
     while not halted:
         j = code[pc]
-        halted, new_pc = execute(j,pc,memory)  # Execute the j
-        dump_state(pc)  # Print PC and RF state
-        pc = new_pc if new_pc is not None else pc + 1  # Update PC
+        halted, new_pc = execute(j,pc,memory)
+        dump_state(pc)
+        pc = new_pc if new_pc is not None else pc + 1
     dump_memory(memory)
 execute_program()
