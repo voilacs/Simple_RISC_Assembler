@@ -14,6 +14,29 @@ def binaryconverter(number):
         l.insert(0,'0')
     binary_string = ''.join(l)
     return binary_string
+def decimal_to_floating_point(decimal_number):
+    decimal_number = abs(decimal_number)
+    integer_part = int(decimal_number)
+    fractional_part = decimal_number - integer_part
+    integer_binary = binaryconverter(integer_part)  # Remove the "0b" prefix
+    fractional_binary = ""
+    while fractional_part != 0:
+        fractional_part *= 2
+        bit = int(fractional_part)
+        fractional_binary += str(bit)
+        fractional_part -= bit
+    binary_representation = integer_binary + "." + fractional_binary
+    if len(binary_representation) > 8:
+        return 2
+    integer_part = binary_representation.split(".")[0]
+    fractional_part = binary_representation.split(".")[1]
+    exponent = len(integer_part) - 1
+    bias = 2**(3 - 1) - 1
+    exponent_ = exponent + bias
+    integer_part_5bit = integer_part[1:].zfill(3)
+    fractional_part_5bit = fractional_part[:5].ljust(5, "0")
+    floating_point_representation = bin(exponent_)[2:].zfill(3) + integer_part_5bit + fractional_part_5bit
+    return floating_point_representation
 def decimal(num):
 	while num > 1:
 		num /= 10
@@ -32,8 +55,8 @@ def object_reader(number):
 	number/=10
 def opcode_return(cmd,move_type="null"):
     #imm for immediate and reg for register
-    instructions=["add","sub","mov","ld","st","mul","div","rs","ls","xor","or","and","not","cmp","jmp","jlt","jgt","je","hlt"]
-    opcode=["00000","00001",["00010","00011"],"00100","00101","00110","00111","01000","01001","01010","01011","01100","01101","01110","01111","11100","11101","11111","11010"]
+    instructions=["add","sub","mov","ld","st","mul","div","rs","ls","xor","or","and","not","cmp","jmp","jlt","jgt","je","hlt","addf","subf","movf"]
+    opcode=["00000","00001",["00010","00011"],"00100","00101","00110","00111","01000","01001","01010","01011","01100","01101","01110","01111","11100","11101","11111","11010","10000","10001","10010"]
     a=instructions.index(cmd)
     print
     if(a==2):
@@ -48,8 +71,8 @@ def InstructionType(ins, isRegister= -1):
         return 'b'
     elif (isRegister==1):
         return 'c'
-    l1=["add", "sub", "mul", "xor", "or", "and"]
-    l2=["mov", "rs", "ls"]
+    l1=["add", "sub", "mul", "xor", "or", "and","addf","subf"]
+    l2=["mov", "rs", "ls","movf"]
     l3=["mov", "div", "not", "cmp"]
     l4=["ld", "st"]
     l5=["jmp", "jlt", "jgt", "je"]
@@ -109,9 +132,9 @@ for i in range(len(Asscode)):
         tmp_labels.append(j[0][0:len(j[0])-1])
         labels[j[0][0:len(j[0])-1]]=binaryconverter(i)
     elif j[0][-1]==':' and j[0][0:len(j[0])-1] in tmp_labels:
-        errors.append(f'Error in line {i+tmp+1} : Multiple usage of same labels')
+        errors.append(f'Error in line {i+1} : Multiple usage of same labels')
     elif ":" in j:
-        errors.append(f'Error in line {i+tmp+1} : invalid declaration of label')
+        errors.append(f'Error in line {i+1} : invalid declaration of label')
     elif(InstructionType(j[0])=='e' and j[1][0:len(j[1])-1] not in tmp_labels):
         tmp_labels.append(j[0][0:len(j[0])-1])
         labels[j[0][0:len(j[0])-1]]=binaryconverter(i)
@@ -144,6 +167,19 @@ for i in range(len(Asscode)-1):
             elif(reg_address(j[1]) != -1 and a>=0 and a<=127):
                 binary.append(opcode_return(j[0],"imm") +"0"+ reg_address(j[1]) + binaryconverter(a))
             continue
+    elif(j[0]=="movf" and len(j)==3):
+        a=float(j[2][1:len(j[2])])
+        if (reg_address(j[1]) == -1):
+                errors.append(f'Error in line {i+tmp+1} : Typo in register name')
+        elif(reg_address(j[1]) == "111"):
+                errors.append(f'Error in line {i+tmp+1} : Illegal use of FLAGS register')
+        elif(j[2][0]!="$"):
+                errors.append(f'Error in line {i+tmp+1} : Wrong syntax for immediate value')
+        elif(decimal_to_floating_point(a)==2):
+                errors.append(f'Error in line {i+tmp+1} : Floating point cannot be represented using 8 bits')
+        elif(reg_address(j[1]) != -1):
+                binary.append(opcode_return(j[0]) +reg_address(j[1]) + decimal_to_floating_point(a))
+        continue
     elif (j[0] == "mov" and len(j)!=3 ):
         errors.append(f'Error in line {i+tmp+1} : Syntax Error')
         continue
